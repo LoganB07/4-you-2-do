@@ -31,4 +31,19 @@ function addJson(item) {
     localStorage.setItem("projects", jsonString);
 }
 
-export {requestJson, addJson, Project};
+function recieveData(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    let array = [];
+    for (let key of formData.entries()) {
+        console.log(key);
+        array.push(key);
+    }
+    console.log(array);
+    let project = new Project(array[0][1], array[1][1], array[2][1], array[3][1]);
+    console.log(project);
+    addJson(project);
+}
+
+export {requestJson, addJson, recieveData, Project};

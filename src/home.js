@@ -1,4 +1,4 @@
-import {requestJson} from "./logic.js";
+import {requestJson, recieveData} from "./logic.js";
 //Dom Manipulation for the homepage
 function loadHomepage() {
     removeAllElements();
@@ -14,39 +14,42 @@ function loadHomepage() {
     let projects = requestJson();
     console.log(projects);
 
-    projects.forEach(project => {
-        let card = document.createElement("div");
-        card.classList.add("project-card");
-
-        switch (project.priority) {
-            case "high": 
-                card.classList.add("high");
-                break;
-            case "mid":
-                card.classList.add("mid");
-                break;
-            case "low": 
-                card.classList.add("low");
-                break;
-        }
-
-        let nameDiv = document.createElement("div");
-        nameDiv.classList.add("project-info");
-        let name = document.createElement("div");
-        name.textContent = project.name;
-        nameDiv.appendChild(name);
-        card.appendChild(nameDiv);
-
-        let dueDiv = document.createElement("div");
-        dueDiv.classList.add("project-info");
-        let due = document.createElement("div");
-        due.textContent = project.dueDate;
-        dueDiv.appendChild(due);
-        card.appendChild(dueDiv);
+    if (projects != null) {
+        projects.forEach(project => {
+            let card = document.createElement("div");
+            card.classList.add("project-card");
     
-        projectListBox.appendChild(card);
+            switch (project.priority) {
+                case "high": 
+                    card.classList.add("high");
+                    break;
+                case "mid":
+                    card.classList.add("mid");
+                    break;
+                case "low": 
+                    card.classList.add("low");
+                    break;
+            }
+    
+            let nameDiv = document.createElement("div");
+            nameDiv.classList.add("project-info");
+            let name = document.createElement("div");
+            name.textContent = project.name;
+            nameDiv.appendChild(name);
+            card.appendChild(nameDiv);
+    
+            let dueDiv = document.createElement("div");
+            dueDiv.classList.add("project-info");
+            let due = document.createElement("div");
+            due.textContent = project.dueDate;
+            dueDiv.appendChild(due);
+            card.appendChild(dueDiv);
         
-    });
+            projectListBox.appendChild(card);
+            
+        });
+
+    }
 }
 
 function createHeader() {
@@ -83,7 +86,7 @@ function loadProjectForm() {
     body.classList.add("project-form");
     createTitle(body);
     createCancelBtn(body);
-    //createForm(body);
+    createForm(body);
 }
 
 function createTitle(body) {
@@ -96,11 +99,114 @@ function createTitle(body) {
 function createCancelBtn(body) {
     let btn = document.createElement("button");
     btn.classList.add("cancel");
+    btn.textContent = "X";
     btn.addEventListener("click", ()=> {
         removeAllElements();
+        body.classList.remove("project-form");
         loadHomepage();
     });
     body.appendChild(btn)
+}
+
+function createForm(body) {
+    const form = document.createElement("form");
+    form.id = "p-form";
+    form.addEventListener("submit", recieveData);
+    form.addEventListener("submit", ()=>{
+        body.classList.remove("project-form")
+        loadHomepage();
+    });
+
+    //name
+    let name = document.createElement("label");
+    name.textContent = "Project Name:";
+    name.setAttribute("for", "name");
+    name.classList.add("name-label");
+    form.appendChild(name);
+
+    name = document.createElement("input");
+    name.id = "name";
+    name.setAttribute("form", "p-form");
+    name.setAttribute("name", "name");
+    form.appendChild(name);
+    //desc
+    let desc = document.createElement("label");
+    desc.textContent = "Project Description:";
+    desc.setAttribute("for", "desc");
+    desc.classList.add("desc-label");
+    form.appendChild(desc);
+
+    desc = document.createElement("input");
+    desc.id = "desc";
+    desc.setAttribute("form", "p-form");
+    desc.setAttribute("name", "desc");
+    form.appendChild(desc);
+    //due
+    let date = document.createElement("label");
+    date.textContent = "Due Date:";
+    date.setAttribute("for", "date");
+    date.classList.add("date-label");
+    form.appendChild(date);
+
+    date = document.createElement("input");
+    date.id = "date";
+    date.setAttribute("form", "p-form");
+    date.setAttribute("name", "date");
+    form.appendChild(date);
+    //priority
+    let priorityLabel = document.createElement("p");
+    priorityLabel.textContent = "Select Priority Level";
+    priorityLabel.classList.add("pr-label");
+    form.appendChild(priorityLabel);
+
+    let priorityContainer = document.createElement("div");
+    priorityContainer.classList.add("pr-container");
+
+    let priority = document.createElement("input");
+    priority.setAttribute("type", "radio");
+    priority.setAttribute("name", "priority");
+    priority.setAttribute("value", "high");
+    priority.checked = true;
+    priority.id = "high";
+    priorityContainer.appendChild(priority);
+
+    priority = document.createElement("p");
+    priority.textContent = "High";
+    priorityContainer.appendChild(priority);
+
+    
+    priority = document.createElement("input");
+    priority.setAttribute("type", "radio");
+    priority.setAttribute("name", "priority");
+    priority.setAttribute("value", "mid");
+    priority.id = "mid";
+    priorityContainer.appendChild(priority);
+
+    priority = document.createElement("p");
+    priority.textContent = "Medium";
+    priorityContainer.appendChild(priority);
+
+    
+    priority = document.createElement("input");
+    priority.setAttribute("type", "radio");
+    priority.setAttribute("name", "priority");
+    priority.setAttribute("value", "low");
+    priority.id = "low";
+    priorityContainer.appendChild(priority);
+
+    priority = document.createElement("p");
+    priority.textContent = "Low";
+    priorityContainer.appendChild(priority);
+
+    form.appendChild(priorityContainer);
+
+    let submitBtn = document.createElement("button");
+    submitBtn.classList.add("btn", "submit");
+    submitBtn.setAttribute("formaction", "./logic.js");
+    submitBtn.textContent = "Submit";
+    form.appendChild(submitBtn);
+    
+    body.appendChild(form);
 }
 
 function removeAllElements(){
